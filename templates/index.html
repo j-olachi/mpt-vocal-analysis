@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPT Vocal Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #e0f2fe;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+        }
+        
+        .header h1 {
+            color: #1e293b;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .header .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 400;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+        }
+        
+        .card-title {
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        /* Instructions */
+        .instructions {
+            color: #475569;
+            line-height: 1.8;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            margin-top: 12px;
+        }
+        
+        .instructions li {
+            margin-bottom: 12px;
+        }
+        
+        /* Test Control */
+        .test-control {
+            text-align: center;
+            padding: 24px 0 12px 0;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+        
+        .btn-primary:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+        
+        /* Status Display */
+        .status-display {
+            text-align: center;
+            padding: 12px;
+            min-height: 40px;
+        }
+        
+        .status-text {
+            color: #475569;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .status-text.active {
+            color: #2563eb;
+        }
+        
+        .status-text.error {
+            color: #dc2626;
+        }
+        
+        /* Timer */
+        .timer-display {
+            text-align: center;
+            padding: 12px 0;
+            min-height: 60px;
+        }
+        
+        .timer {
+            font-size: 48px;
+            font-weight: 600;
+            color: #2563eb;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Calibration Phase */
+        .calibration-card {
+            display: none;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+        
+        .calibration-card.active {
+            display: block;
+        }
+        
+        .calibration-title {
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .calibration-text {
+            color: #1e40af;
+            font-size: 14px;
+        }
+        
+        /* Voice Level Indicator */
+        .voice-indicator {
+            display: none;
+            margin: 16px 0 8px 0;
+        }
+        
+        .voice-indicator.active {
+            display: block;
+        }
+        
+        .voice-label {
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .voice-meter {
+            width: 100%;
+            height: 32px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .voice-level {
+            height: 100%;
+            background: #2563eb;
+            width: 0%;
+            transition: width 0.1s ease-out;
+        }
+        
+        /* Completion Card */
+        .completion-card {
+            display: none;
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 32px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .completion-card.show {
+            display: block;
+        }
+        
+        .completion-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #059669;
+        }
+        
+        .completion-title {
+            color: #065f46;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .completion-message {
+            color: #047857;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        
+        .next-steps {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #a7f3d0;
+            margin-top: 20px;
+        }
+        
+        .next-steps-title {
+            color: #065f46;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .next-steps-text {
+            color: #047857;
+            font-size: 14px;
+        }
+        
+        /* Staff View - Hidden by default */
+        .results-summary {
+            display: none;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .results-summary.show {
+            display: block;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .result-value {
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Maximum Phonation Time Assessment</h1>
+            <div class="subtitle">Respiratory Function Evaluation</div>
+        </div>
+        
+        <!-- Instructions Card -->
+        <div class="card" id="instructionsCard">
+            <div class="card-title">Test Instructions</div>
+            <div class="instructions">
+                <p>This test measures your respiratory function by timing how long you can sustain a vowel sound.</p>
+                <ol>
+                    <li>When ready, click "Begin Test" below</li>
+                    <li>The system will calibrate to the room's ambient noise (approximately 1 second)</li>
+                    <li>Take a deep breath</li>
+                    <li>Say "ahh" (as if at a doctor's office) and sustain it as long as comfortably possible</li>
+                    <li>The test will automatically stop when you finish</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- Test Control Card -->
+        <div class="card" id="testCard">
+            <div class="card-title">Assessment</div>
+            
+            <!-- Calibration Phase -->
+            <div class="calibration-card" id="calibrationCard">
+                <div class="calibration-title">Calibrating System</div>
+                <div class="calibration-text">Please remain quiet while the system adjusts to ambient noise levels...</div>
+            </div>
+            
+            <!-- Status Display -->
+            <div class="status-display">
+                <div class="status-text" id="statusText">Ready to begin</div>
+            </div>
+            
+            <!-- Timer -->
+            <div class="timer-display">
+                <div class="timer" id="timer"></div>
+            </div>
+            
+            <!-- Voice Level Indicator -->
+            <div class="voice-indicator" id="voiceIndicator">
+                <div class="voice-label">Voice Level</div>
+                <div class="voice-meter">
+                    <div class="voice-level" id="voiceLevel"></div>
+                </div>
+            </div>
+            
+            <!-- Control Button -->
+            <div class="test-control">
+                <button class="btn-primary" id="testButton" onclick="startTest()">Begin Test</button>
+            </div>
+        </div>
+        
+        <!-- Completion Card -->
+        <div class="completion-card" id="completionCard">
+            <div class="completion-icon">✓</div>
+            <div class="completion-title">Assessment Complete</div>
+            <div class="completion-message">
+                Thank you for completing the vocal assessment. Your results have been recorded.
+            </div>
+            
+            <div class="next-steps">
+                <div class="next-steps-title">Next Steps</div>
+                <div class="next-steps-text">
+                    Please proceed to the registration desk to continue with your visit.
+                </div>
+            </div>
+            
+            <!-- Staff View - Toggle with Shift+Click on completion card -->
+            <div class="results-summary" id="resultsSummary">
+                <div class="result-row">
+                    <span class="result-label">MPT Duration:</span>
+                    <span class="result-value" id="mptValue">--</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Classification:</span>
+                    <span class="result-value" id="classification">--</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">ESI Level:</span>
+                    <span class="result-value" id="esiLevel">--</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Timestamp:</span>
+                    <span class="result-value" id="timestamp">--</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <script>
+        // Global variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let timerInterval;
+        let audioContext;
+        let analyser;
+        
+        // DOM elements
+        const testButton = document.getElementById('testButton');
+        const statusText = document.getElementById('statusText');
+        const timer = document.getElementById('timer');
+        const calibrationCard = document.getElementById('calibrationCard');
+        const voiceIndicator = document.getElementById('voiceIndicator');
+        const voiceLevel = document.getElementById('voiceLevel');
+        const completionCard = document.getElementById('completionCard');
+        const testCard = document.getElementById('testCard');
+        const instructionsCard = document.getElementById('instructionsCard');
+        const resultsSummary = document.getElementById('resultsSummary');
+        
+        // Staff view toggle (Shift+Click on completion card)
+        completionCard.addEventListener('click', function(e) {
+            if (e.shiftKey) {
+                resultsSummary.classList.toggle('show');
+            }
+        });
+        
+        async function startTest() {
+            // Reset
+            audioChunks = [];
+            timer.textContent = '';
+            
+            try {
+                // Request microphone access
+                updateStatus('Requesting microphone access...');
+                testButton.disabled = true;
+                
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        sampleRate: 16000,
+                        channelCount: 1,
+                        echoCancellation: false,
+                        noiseSuppression: false,
+                        autoGainControl: false
+                    }
+                });
+                
+                // Setup audio visualization for voice level indicator
+                audioContext = new AudioContext();
+                const source = audioContext.createMediaStreamSource(stream);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                source.connect(analyser);
+                
+                // Phase 1: Calibration
+                calibrationCard.classList.add('active');
+                updateStatus('Calibrating to ambient noise', true);
+                
+                // Wait 1 second for calibration
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                calibrationCard.classList.remove('active');
+                
+                // Phase 2: Ready to record
+                updateStatus('Ready - Take a deep breath and say "ahh"', true);
+                voiceIndicator.classList.add('active');
+                
+                // Create media recorder
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    voiceIndicator.classList.remove('active');
+                    updateStatus('Processing audio...');
+                    
+                    // Convert to blob
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    
+                    // Convert to base64
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    
+                    reader.onloadend = async () => {
+                        const base64Audio = reader.result.split(',')[1];
+                        
+                        // Send to backend for analysis
+                        try {
+                            const response = await fetch('/api/analyze-mpt', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    audio_data: base64Audio
+                                })
+                            });
+                            
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                showCompletion(result);
+                            } else {
+                                updateStatus('Error: ' + (result.error || 'Analysis failed'), false, true);
+                                testButton.disabled = false;
+                            }
+                        } catch (error) {
+                            updateStatus('Network error: ' + error.message, false, true);
+                            testButton.disabled = false;
+                        }
+                    };
+                    
+                    // Stop all media tracks
+                    stream.getTracks().forEach(track => track.stop());
+                    if (audioContext) {
+                        audioContext.close();
+                    }
+                };
+                
+                // Start recording
+                mediaRecorder.start(100); // Collect data every 100ms
+                updateStatus('Recording... sustain "ahh" sound', true);
+                
+                // Start timer
+                let seconds = 0;
+                timerInterval = setInterval(() => {
+                    seconds += 0.1;
+                    timer.textContent = seconds.toFixed(1) + 's';
+                }, 100);
+                
+                // Start voice level visualization
+                const volumeInterval = setInterval(() => {
+                    if (mediaRecorder && mediaRecorder.state === 'recording') {
+                        const volume = getVolume();
+                        voiceLevel.style.width = volume + '%';
+                    } else {
+                        clearInterval(volumeInterval);
+                    }
+                }, 50);
+                
+                // Auto-stop after 45 seconds (safety)
+                const autoStopTimeout = setTimeout(() => {
+                    if (mediaRecorder && mediaRecorder.state === 'recording') {
+                        stopRecording();
+                    }
+                }, 45000);
+                
+                // Allow manual stop
+                testButton.onclick = () => {
+                    clearTimeout(autoStopTimeout);
+                    stopRecording();
+                };
+                testButton.textContent = 'Stop Recording';
+                testButton.disabled = false;
+                
+            } catch (error) {
+                console.error('Microphone error:', error);
+                updateStatus('Microphone access denied. Please allow microphone access and try again.', false, true);
+                testButton.disabled = false;
+            }
+        }
+        
+        function stopRecording() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+            }
+            testButton.textContent = 'Begin Test';
+            testButton.onclick = startTest;
+        }
+        
+        function getVolume() {
+            if (!analyser) return 0;
+            
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+            
+            const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+            return Math.min(100, (average / 256) * 200); // Scale to 0-100%
+        }
+        
+        function updateStatus(message, active = false, error = false) {
+            statusText.textContent = message;
+            statusText.classList.remove('active', 'error');
+            if (active) statusText.classList.add('active');
+            if (error) statusText.classList.add('error');
+        }
+        
+        function showCompletion(result) {
+            // Hide test cards
+            testCard.style.display = 'none';
+            instructionsCard.style.display = 'none';
+            
+            // Show completion card
+            completionCard.classList.add('show');
+            
+            // Populate staff results (hidden by default)
+            document.getElementById('mptValue').textContent = result.mpt + ' seconds';
+            document.getElementById('classification').textContent = result.classification.urgency;
+            document.getElementById('esiLevel').textContent = 'ESI-' + result.classification.esi_level;
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+            
+            // Reset button
+            testButton.disabled = false;
+            testButton.textContent = 'Begin Test';
+            testButton.onclick = startTest;
+        }
+    </script>
+</body>
+</html>
